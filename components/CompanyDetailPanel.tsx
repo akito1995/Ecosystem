@@ -43,7 +43,7 @@ export default function CompanyDetailPanel({ company }: { company: CompanyData }
           onClick={handleRefresh}
           disabled={isRefreshing}
           className="p-2 bg-[#1A2235] hover:bg-[#2A3441] rounded-full text-gray-400 transition-colors"
-          title="Refresh Research"
+          title="Làm mới dữ liệu"
         >
           <RefreshCw size={20} className={isRefreshing ? "animate-spin" : ""} />
         </button>
@@ -52,34 +52,34 @@ export default function CompanyDetailPanel({ company }: { company: CompanyData }
       <div className="space-y-6">
         {/* Overview */}
         <section>
-          <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Overview</h3>
+          <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Tổng quan</h3>
           <p className="text-gray-300 text-sm leading-relaxed">{company.description || "N/A"}</p>
         </section>
 
         {/* Ownership Structure */}
         <section>
-          <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Ownership Structure</h3>
+          <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Cấu trúc sở hữu</h3>
           <p className="text-gray-300 text-sm">{company.ownership_structure || "N/A"}</p>
         </section>
 
         {/* Value Chain Position */}
         <section>
-          <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Value Chain Position</h3>
+          <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Vị trí trong chuỗi giá trị</h3>
           <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${badgeColor(company.industry_value_chain_position)}`}>
-            {company.industry_value_chain_position || "Unknown"}
+            {company.industry_value_chain_position || "Không rõ"}
           </span>
         </section>
 
         {/* Subsidiaries */}
         {company.subsidiaries && company.subsidiaries.length > 0 && (
           <section>
-            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Subsidiaries ({company.subsidiaries.length})</h3>
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Công ty con ({company.subsidiaries.length})</h3>
             <div className="space-y-2">
               {company.subsidiaries.map((sub, i) => (
                 <div key={i} className="p-3 bg-[#1A2235] rounded-lg border border-[#2A3441] cursor-pointer hover:border-blue-500/50 transition-colors" onClick={() => router.push(`/company/${encodeURIComponent(sub.name.toLowerCase())}`)}>
                   <p className="font-medium text-white text-sm">{sub.name}</p>
                   <div className="flex justify-between mt-1 text-xs text-gray-500">
-                    <span>{sub.role || "Subsidiary"}</span>
+                    <span>{sub.role || "Công ty con"}</span>
                     {sub.ownership_percent && <span>{sub.ownership_percent}%</span>}
                   </div>
                 </div>
@@ -91,7 +91,7 @@ export default function CompanyDetailPanel({ company }: { company: CompanyData }
         {/* Associated Companies */}
         {company.associated_companies && company.associated_companies.length > 0 && (
           <section>
-            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Associated Companies ({company.associated_companies.length})</h3>
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Công ty liên kết ({company.associated_companies.length})</h3>
             <div className="space-y-2">
               {company.associated_companies.map((assoc, i) => (
                 <div key={i} className="p-3 bg-[#1A2235] rounded-lg border border-[#2A3441] cursor-pointer hover:border-amber-500/50 transition-colors" onClick={() => router.push(`/company/${encodeURIComponent(assoc.name.toLowerCase())}`)}>
@@ -106,7 +106,7 @@ export default function CompanyDetailPanel({ company }: { company: CompanyData }
         {/* Notable Relationships */}
         {company.notable_relationships && company.notable_relationships.length > 0 && (
           <section>
-            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Notable Relationships</h3>
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Mối quan hệ đáng chú ý</h3>
             <ul className="space-y-2">
               {company.notable_relationships.map((rel, i) => (
                 <li key={i} className="flex justify-between items-center text-sm">
@@ -121,7 +121,7 @@ export default function CompanyDetailPanel({ company }: { company: CompanyData }
         {/* Sources */}
         {company.sources && company.sources.length > 0 && (
           <section>
-            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Sources</h3>
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Nguồn tham khảo</h3>
             <ul className="space-y-2">
               {company.sources.map((source, i) => {
                 const isUrl = source.startsWith('http');
@@ -129,7 +129,7 @@ export default function CompanyDetailPanel({ company }: { company: CompanyData }
                   <li key={i} className="text-sm">
                     {isUrl ? (
                       <a href={source} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 flex items-center gap-1">
-                        <ExternalLink size={14} /> Source {i + 1}
+                        <ExternalLink size={14} /> Nguồn {i + 1}
                       </a>
                     ) : (
                       <span className="text-gray-400">{source}</span>

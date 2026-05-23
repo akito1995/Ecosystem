@@ -6,7 +6,8 @@ const SYSTEM_PROMPT = `You are a corporate research analyst specializing in Viet
 Your task is to research corporate structures, ownership, and industry ecosystems.
 You MUST respond ONLY with valid JSON matching the requested schema. No explanation, no markdown formatting.
 If data is unknown, use null for strings and [] for arrays.
-Focus on: corporate group structure, parent/subsidiary relationships, industry value chain.`;
+Focus on: corporate group structure, parent/subsidiary relationships, industry value chain.
+IMPORTANT: All text values in the JSON (except keys) MUST be written in Vietnamese (Tiếng Việt).`;
 
 const USER_PROMPT_TEMPLATE = `Research this company or industry: "{query}"
 

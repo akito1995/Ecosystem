@@ -19,9 +19,10 @@ export function buildEcosystemGraph(company: CompanyData) {
       border: "1px solid #2563EB",
       width: 200,
       padding: 15,
-      borderRadius: 8,
+      borderRadius: 12,
       fontWeight: "bold",
-      textAlign: "center"
+      textAlign: "center",
+      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.25)"
     }
   });
 
@@ -39,8 +40,9 @@ export function buildEcosystemGraph(company: CompanyData) {
         border: "1px solid #7C3AED",
         width: 180,
         padding: 10,
-        borderRadius: 8,
-        textAlign: "center"
+        borderRadius: 12,
+        textAlign: "center",
+        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.25)"
       }
     });
 
@@ -48,7 +50,7 @@ export function buildEcosystemGraph(company: CompanyData) {
       id: `e-parent-root`,
       source: parentId,
       target: rootId,
-      label: "Owns",
+      label: "Sở hữu",
       type: "straight",
       style: { stroke: "#A78BFA", strokeWidth: 2 },
       animated: true
@@ -75,9 +77,10 @@ export function buildEcosystemGraph(company: CompanyData) {
           border: "1px solid #059669",
           width: subWidth,
           padding: 10,
-          borderRadius: 8,
+          borderRadius: 12,
           textAlign: "center",
-          fontSize: "12px"
+          fontSize: "12px",
+          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.25)"
         }
       });
 
@@ -85,7 +88,7 @@ export function buildEcosystemGraph(company: CompanyData) {
         id: `e-root-${subId}`,
         source: rootId,
         target: subId,
-        label: sub.ownership_percent ? `${sub.ownership_percent}%` : "Owns",
+        label: sub.ownership_percent ? `${sub.ownership_percent}%` : "Sở hữu",
         type: "smoothstep",
         style: { stroke: "#34D399", strokeWidth: 2 },
         animated: true
@@ -112,9 +115,10 @@ export function buildEcosystemGraph(company: CompanyData) {
           border: "1px solid #D97706",
           width: 140,
           padding: 8,
-          borderRadius: 8,
+          borderRadius: 12,
           textAlign: "center",
-          fontSize: "12px"
+          fontSize: "12px",
+          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.25)"
         }
       });
 
@@ -122,7 +126,7 @@ export function buildEcosystemGraph(company: CompanyData) {
         id: `e-root-${assocId}`,
         source: rootId,
         target: assocId,
-        label: assoc.relationship || "Associated",
+        label: assoc.relationship || "Liên kết",
         type: "straight",
         style: { stroke: "#FBBF24", strokeWidth: 2, strokeDasharray: "5 5" },
       });
