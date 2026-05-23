@@ -52,8 +52,11 @@ export async function POST(req: Request) {
       console.log("Gemini failed, retrying once...", e.message);
       try {
         companyData = await fetchGeminiResearch(query + " please return ONLY valid JSON");
-      } catch (retryErr) {
-        return NextResponse.json({ error: "Lỗi từ Gemini API" }, { status: 500 });
+      } catch (retryErr: any) {
+        // Return the actual error message to the frontend for easy debugging
+        return NextResponse.json({ 
+          error: `Lỗi từ Gemini API: ${e.response?.data?.error?.message || e.message || retryErr.message}` 
+        }, { status: 500 });
       }
     }
 
