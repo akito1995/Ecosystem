@@ -15,13 +15,15 @@ Return ONLY this exact JSON structure:
 {
   "company_name": "Official company name",
   "business_registration_name": "Name as registered",
+  "stock_ticker": "3-letter stock ticker if listed (e.g., VIC, FPT), otherwise null",
+  "established_year": "Year founded (e.g., 1993), or null if unknown",
   "industry": "Primary industry sector",
   "parent_company": "Parent company or group name (null if independent)",
   "subsidiaries": [
-    { "name": "Company name", "role": "Role in group", "ownership_percent": null }
+    { "name": "Company name", "role": "Role in group", "ownership_percent": null, "stock_ticker": null, "established_year": null }
   ],
   "associated_companies": [
-    { "name": "Company name", "relationship": "Type of relationship" }
+    { "name": "Company name", "relationship": "Type of relationship", "stock_ticker": null, "established_year": null }
   ],
   "ecosystem_role": "Role of this company in industry ecosystem",
   "industry_value_chain_position": "upstream/midstream/downstream/integrated",

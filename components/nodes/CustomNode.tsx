@@ -1,70 +1,75 @@
-"use client";
-
 import { Handle, Position } from "@xyflow/react";
 import { Building2, Landmark, Link, Crown } from "lucide-react";
+import { useEffect, useState } from "react";
 
 export default function CustomNode({ data }: { data: any }) {
-  const { label, nodeType, percentage } = data;
+  const [prices, setPrices] = useState<number[]>([]);
+  
+  useEffect(() => {
+    if (data.ticker) {
+      fetch(`/api/finance?ticker=${data.ticker}`)
+        .then(res => res.json())
+        .then(res => {
+          if (res.prices) setPrices(res.prices);
+        });
+    }
+  }, [data.ticker]);
 
-  // Determine styles and icon based on nodeType
-  let bgColor = "bg-gray-800/60";
-  let borderColor = "border-gray-500/50";
-  let iconColor = "text-gray-400";
-  let glowColor = "shadow-gray-500/20";
-  let Icon = Building2;
+  let icon = <Building2 size={16} />;
+  if (data.nodeType === "center") icon = <Crown size={16} />;
+  if (data.nodeType === "parent") icon = <Landmark size={16} />;
+  if (data.nodeType === "associated") icon = <Link size={16} />;
 
-  switch (nodeType) {
-    case "root":
-      bgColor = "bg-blue-600/70";
-      borderColor = "border-blue-400/80";
-      iconColor = "text-blue-100";
-      glowColor = "shadow-blue-500/50 shadow-xl";
-      Icon = Building2;
-      break;
-    case "parent":
-      bgColor = "bg-purple-600/70";
-      borderColor = "border-purple-400/80";
-      iconColor = "text-purple-100";
-      glowColor = "shadow-purple-500/50 shadow-xl";
-      Icon = Crown;
-      break;
-    case "subsidiary":
-      bgColor = "bg-emerald-600/70";
-      borderColor = "border-emerald-400/80";
-      iconColor = "text-emerald-100";
-      glowColor = "shadow-emerald-500/50 shadow-xl";
-      Icon = Landmark;
-      break;
-    case "associated":
-      bgColor = "bg-amber-500/70";
-      borderColor = "border-amber-400/80";
-      iconColor = "text-amber-100";
-      glowColor = "shadow-amber-500/50 shadow-xl";
-      Icon = Link;
-      break;
-  }
+  const renderSparkline = () => {
+    if (prices.length < 2) return null;
+    const min = Math.min(...prices);
+    const max = Math.max(...prices);
+    const range = max - min || 1;
+    const width = 100;
+    const height = 20;
+    
+    const points = prices.map((p, i) => {
+      const x = (i / (prices.length - 1)) * width;
+      const y = height - ((p - min) / range) * height;
+      return `${x},${y}`;
+    }).join(" ");
+
+    const isUp = prices[prices.length - 1] >= prices[0];
+    const color = isUp ? "#10B981" : "#EF4444"; // emerald for up, red for down
+
+    return (
+      <div className="mt-2 w-full flex flex-col items-center">
+        <svg width={width} height={height} className="overflow-visible">
+          <polyline fill="none" stroke={color} strokeWidth="1.5" points={points} strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+        <span className={`text-[9px] mt-1 font-bold ${isUp ? 'text-emerald-500' : 'text-red-500'}`}>
+          {data.ticker} {isUp ? '▲' : '▼'}
+        </span>
+      </div>
+    );
+  };
 
   return (
-    <div className={`px-4 py-3 min-w-[160px] max-w-[220px] backdrop-blur-md border ${borderColor} ${bgColor} rounded-xl shadow-lg ${glowColor} flex flex-col items-center justify-center transition-all duration-300 hover:scale-105 hover:brightness-110 cursor-pointer group`}>
-      {/* Invisible target handle so edges can connect */}
-      <Handle type="target" position={Position.Top} className="!w-2 !h-2 !opacity-0" />
+    <div className={`px-4 py-3 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-xl backdrop-blur-md bg-white/10 border border-white/20 flex flex-col items-center justify-center text-center w-full h-full relative hover:scale-105 hover:bg-white/20 transition-all duration-300`}>
+      <Handle type="target" position={Position.Top} className="w-2 h-2 !bg-slate-400 border-none" />
       
-      <div className={`p-2 rounded-full bg-white/10 mb-2 ${iconColor} group-hover:scale-110 transition-transform`}>
-        <Icon size={20} />
+      <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white mb-2 shadow-inner">
+        {icon}
       </div>
       
-      <div className="text-white font-semibold text-center text-xs md:text-sm leading-tight break-words w-full">
-        {label}
+      <div className="text-white font-bold text-xs tracking-tight line-clamp-2">
+        {data.label}
       </div>
       
-      {percentage && (
-        <div className="mt-2 text-[10px] font-bold px-2 py-0.5 rounded bg-black/40 text-white/90 border border-white/10">
-          {percentage}%
+      {data.percentage && (
+        <div className="absolute -bottom-3 bg-slate-800 text-white text-[10px] px-2 py-0.5 rounded-full font-mono border border-slate-600 shadow-lg">
+          {data.percentage}%
         </div>
       )}
 
-      {/* Invisible source handle */}
-      <Handle type="source" position={Position.Bottom} className="!w-2 !h-2 !opacity-0" />
+      {renderSparkline()}
+
+      <Handle type="source" position={Position.Bottom} className="w-2 h-2 !bg-slate-400 border-none" />
     </div>
   );
 }
