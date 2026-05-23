@@ -1,29 +1,18 @@
 import { CompanyData } from "../types";
+import dagre from "dagre";
 
 export function buildEcosystemGraph(company: CompanyData) {
   const nodes: any[] = [];
   const edges: any[] = [];
 
   const rootId = "root";
-  const startY = 250;
   
   // Root node
   nodes.push({
     id: rootId,
-    type: "default",
-    data: { label: company.company_name },
-    position: { x: 400, y: startY },
-    style: {
-      background: "#3B82F6",
-      color: "#FFF",
-      border: "1px solid #2563EB",
-      width: 200,
-      padding: 15,
-      borderRadius: 12,
-      fontWeight: "bold",
-      textAlign: "center",
-      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.25)"
-    }
+    type: "custom",
+    data: { label: company.company_name, nodeType: "root" },
+    position: { x: 0, y: 0 }
   });
 
   // Parent company
@@ -31,19 +20,9 @@ export function buildEcosystemGraph(company: CompanyData) {
     const parentId = "parent";
     nodes.push({
       id: parentId,
-      type: "default",
-      data: { label: company.parent_company },
-      position: { x: 400, y: startY - 150 },
-      style: {
-        background: "#8B5CF6",
-        color: "#FFF",
-        border: "1px solid #7C3AED",
-        width: 180,
-        padding: 10,
-        borderRadius: 12,
-        textAlign: "center",
-        boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.25)"
-      }
+      type: "custom",
+      data: { label: company.parent_company, nodeType: "parent" },
+      position: { x: 0, y: 0 }
     });
 
     edges.push({
@@ -59,29 +38,13 @@ export function buildEcosystemGraph(company: CompanyData) {
 
   // Subsidiaries
   if (company.subsidiaries && company.subsidiaries.length > 0) {
-    const subWidth = 150;
-    const spacing = 40;
-    const totalWidth = company.subsidiaries.length * subWidth + (company.subsidiaries.length - 1) * spacing;
-    let startX = 400 - totalWidth / 2 + subWidth / 2;
-
     company.subsidiaries.forEach((sub, index) => {
       const subId = `sub-${index}`;
       nodes.push({
         id: subId,
-        type: "default",
-        data: { label: sub.name },
-        position: { x: startX + index * (subWidth + spacing), y: startY + 150 },
-        style: {
-          background: "#10B981",
-          color: "#FFF",
-          border: "1px solid #059669",
-          width: subWidth,
-          padding: 10,
-          borderRadius: 12,
-          textAlign: "center",
-          fontSize: "12px",
-          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.25)"
-        }
+        type: "custom",
+        data: { label: sub.name, nodeType: "subsidiary", percentage: sub.ownership_percent },
+        position: { x: 0, y: 0 }
       });
 
       edges.push({
@@ -99,27 +62,12 @@ export function buildEcosystemGraph(company: CompanyData) {
   // Associated Companies
   if (company.associated_companies && company.associated_companies.length > 0) {
     company.associated_companies.forEach((assoc, index) => {
-      const isLeft = index % 2 === 0;
-      const xOffset = isLeft ? -250 : 250;
-      const yOffset = Math.floor(index / 2) * 80;
-
       const assocId = `assoc-${index}`;
       nodes.push({
         id: assocId,
-        type: "default",
-        data: { label: assoc.name },
-        position: { x: 400 + xOffset, y: startY + yOffset },
-        style: {
-          background: "#F59E0B",
-          color: "#FFF",
-          border: "1px solid #D97706",
-          width: 140,
-          padding: 8,
-          borderRadius: 12,
-          textAlign: "center",
-          fontSize: "12px",
-          boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.25)"
-        }
+        type: "custom",
+        data: { label: assoc.name, nodeType: "associated" },
+        position: { x: 0, y: 0 }
       });
 
       edges.push({
@@ -132,6 +80,30 @@ export function buildEcosystemGraph(company: CompanyData) {
       });
     });
   }
+
+  // Apply Dagre layout
+  const g = new dagre.graphlib.Graph();
+  g.setGraph({ rankdir: "TB", nodesep: 150, ranksep: 180 });
+  g.setDefaultEdgeLabel(() => ({}));
+
+  nodes.forEach(node => {
+    // Standard dimensions for custom nodes
+    g.setNode(node.id, { width: 180, height: 100 });
+  });
+
+  edges.forEach(edge => {
+    g.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(g);
+
+  nodes.forEach(node => {
+    const nodeWithPosition = g.node(node.id);
+    node.position = {
+      x: nodeWithPosition.x - 180 / 2,
+      y: nodeWithPosition.y - 100 / 2
+    };
+  });
 
   return { nodes, edges };
 }
