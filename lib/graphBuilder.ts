@@ -15,7 +15,8 @@ export function buildEcosystemGraph(companyData: CompanyData) {
       label: companyData.company_name,
       nodeType: "center",
       ticker: companyData.stock_ticker || null,
-      year: companyData.established_year || null
+      year: companyData.established_year || null,
+      website: companyData.website || null
     },
     style: baseNodeStyle,
   };
@@ -31,7 +32,8 @@ export function buildEcosystemGraph(companyData: CompanyData) {
         label: companyData.parent_company,
         nodeType: "parent",
         ticker: null,
-        year: null
+        year: null,
+        website: null // Parent website is not fetched in standard prompt unless we add it
       },
       style: baseNodeStyle,
     });
@@ -58,7 +60,8 @@ export function buildEcosystemGraph(companyData: CompanyData) {
           nodeType: "subsidiary",
           percentage: sub.ownership_percent,
           ticker: sub.stock_ticker || null,
-          year: sub.established_year || null
+          year: sub.established_year || null,
+          website: sub.website || null
         },
         style: baseNodeStyle,
       });
@@ -85,7 +88,8 @@ export function buildEcosystemGraph(companyData: CompanyData) {
           label: assoc.name,
           nodeType: "associated",
           ticker: assoc.stock_ticker || null,
-          year: assoc.established_year || null
+          year: assoc.established_year || null,
+          website: assoc.website || null
         },
         style: baseNodeStyle,
       });

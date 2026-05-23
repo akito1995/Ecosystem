@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import EcosystemGraph from "@/components/EcosystemGraph";
 import { CompanyData } from "@/types";
-import { Search, Loader2, ArrowLeft, ArrowRightLeft, Sparkles } from "lucide-react";
+import { Search, Loader2, ArrowLeft, ArrowRightLeft, Sparkles, Swords, Trophy, Target, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 
 export default function ComparePage() {
@@ -15,6 +15,27 @@ export default function ComparePage() {
   
   const [loading1, setLoading1] = useState(false);
   const [loading2, setLoading2] = useState(false);
+
+  const [compareResult, setCompareResult] = useState<any>(null);
+  const [comparing, setComparing] = useState(false);
+
+  useEffect(() => {
+    if (data1 && data2) {
+      setComparing(true);
+      fetch('/api/compare', {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ company1: data1.company, company2: data2.company })
+      })
+      .then(res => res.json())
+      .then(json => {
+        if (!json.error) setCompareResult(json);
+      })
+      .finally(() => setComparing(false));
+    } else {
+      setCompareResult(null);
+    }
+  }, [data1, data2]);
 
   const handleSearch1 = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,7 +85,7 @@ export default function ComparePage() {
       </div>
 
       {/* Split Screen */}
-      <div className="flex flex-1 overflow-hidden divide-x divide-slate-800">
+      <div className="flex flex-1 overflow-hidden divide-x divide-slate-800 relative">
         {/* Left Side */}
         <div className="flex-1 flex flex-col relative bg-[#0B101E]">
           <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 w-[80%] max-w-md">
@@ -132,6 +153,88 @@ export default function ComparePage() {
             </div>
           )}
         </div>
+
+        {/* Center Analysis Panel */}
+        {data1 && data2 && (
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] bg-slate-900/95 backdrop-blur-xl border border-slate-700 rounded-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] z-50 flex flex-col max-h-[85vh] overflow-hidden">
+            <div className="p-4 border-b border-slate-800 bg-gradient-to-r from-blue-900/50 to-purple-900/50 flex items-center justify-center gap-3">
+              <Swords className="text-pink-500" size={24} />
+              <h2 className="text-lg font-black text-white uppercase tracking-wider">Trọng tài AI Phân tích</h2>
+            </div>
+            
+            <div className="p-5 overflow-y-auto custom-scrollbar flex-1">
+              {comparing ? (
+                <div className="flex flex-col items-center justify-center py-10 text-slate-400">
+                  <Loader2 className="animate-spin mb-4 text-pink-500" size={32} />
+                  <p className="animate-pulse text-sm">Trí tuệ nhân tạo đang phân tích thế trận...</p>
+                </div>
+              ) : compareResult ? (
+                <div className="space-y-6">
+                  {/* Core Battleground */}
+                  <div className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+                    <h3 className="text-sm font-bold text-slate-300 mb-2 flex items-center gap-2">
+                      <Target size={16} className="text-red-400" /> Mặt trận Cốt lõi
+                    </h3>
+                    <p className="text-sm text-slate-300 leading-relaxed">{compareResult.core_battleground}</p>
+                  </div>
+
+                  {/* Key Clashes */}
+                  {compareResult.key_clashes && compareResult.key_clashes.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-300 mb-3 flex items-center gap-2">
+                        <Swords size={16} className="text-orange-400" /> Điểm nóng Xung đột
+                      </h3>
+                      <div className="space-y-3">
+                        {compareResult.key_clashes.map((clash: any, i: number) => (
+                          <div key={i} className="bg-slate-800/30 p-3 rounded-lg border border-slate-700/50 text-sm">
+                            <div className="flex justify-between items-center mb-2">
+                              <span className="font-bold text-blue-400">{clash.c1_subsidiary}</span>
+                              <span className="text-xs text-slate-500 mx-2">VS</span>
+                              <span className="font-bold text-purple-400">{clash.c2_subsidiary}</span>
+                            </div>
+                            <div className="text-xs text-slate-400 mb-1 bg-slate-900/50 inline-block px-2 py-0.5 rounded">Lĩnh vực: {clash.field}</div>
+                            <div className="text-slate-300 text-xs mt-1"><span className="text-emerald-400">Dự đoán:</span> {clash.winner_prediction}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* SWOT Comparison */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-blue-900/20 p-3 rounded-xl border border-blue-500/20">
+                      <h4 className="text-xs font-bold text-blue-400 mb-2">{data1.company.company_name}</h4>
+                      <div className="text-xs space-y-2">
+                        <p><span className="text-emerald-400 font-bold block mb-0.5">Điểm mạnh:</span><span className="text-slate-300">{compareResult.swot_c1?.strength}</span></p>
+                        <p><span className="text-red-400 font-bold block mb-0.5">Điểm yếu:</span><span className="text-slate-300">{compareResult.swot_c1?.weakness}</span></p>
+                      </div>
+                    </div>
+                    <div className="bg-purple-900/20 p-3 rounded-xl border border-purple-500/20">
+                      <h4 className="text-xs font-bold text-purple-400 mb-2">{data2.company.company_name}</h4>
+                      <div className="text-xs space-y-2">
+                        <p><span className="text-emerald-400 font-bold block mb-0.5">Điểm mạnh:</span><span className="text-slate-300">{compareResult.swot_c2?.strength}</span></p>
+                        <p><span className="text-red-400 font-bold block mb-0.5">Điểm yếu:</span><span className="text-slate-300">{compareResult.swot_c2?.weakness}</span></p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Final Verdict */}
+                  <div className="bg-gradient-to-r from-emerald-900/30 to-teal-900/30 p-4 rounded-xl border border-emerald-500/30">
+                    <h3 className="text-sm font-bold text-emerald-400 mb-2 flex items-center gap-2">
+                      <Trophy size={16} /> Phán quyết Cuối cùng
+                    </h3>
+                    <p className="text-sm text-slate-200 leading-relaxed">{compareResult.final_verdict}</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-10 text-slate-500">
+                  <AlertTriangle size={32} className="mx-auto mb-3 opacity-50" />
+                  <p>Không thể phân tích dữ liệu lúc này</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

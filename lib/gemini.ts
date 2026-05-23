@@ -16,6 +16,7 @@ Return ONLY this exact JSON structure:
   "company_name": "Official company name",
   "business_registration_name": "Name as registered",
   "stock_ticker": "3-letter stock ticker if listed (e.g., VIC, FPT), otherwise null",
+  "website": "Main website domain if known (e.g., 'vingroup.net'), else null",
   "is_foreign": true or false,
   "established_year": "Year founded (e.g., '1993'), or null",
   "tax_code": "Tax code/Business ID if known, else null",
@@ -34,10 +35,10 @@ Return ONLY this exact JSON structure:
   "industry": "Primary industry sector",
   "parent_company": "Parent company or group name (null if independent)",
   "subsidiaries": [
-    { "name": "Company name", "role": "Role in group", "ownership_percent": null, "stock_ticker": null, "established_year": null }
+    { "name": "Company name", "role": "Role in group", "ownership_percent": null, "stock_ticker": null, "established_year": null, "website": "Domain if known, else null" }
   ],
   "associated_companies": [
-    { "name": "Company name", "relationship": "Type of relationship", "stock_ticker": null, "established_year": null }
+    { "name": "Company name", "relationship": "Type of relationship", "stock_ticker": null, "established_year": null, "website": "Domain if known, else null" }
   ],
   "ecosystem_role": "Role of this company in industry ecosystem",
   "industry_value_chain_position": "upstream/midstream/downstream/integrated",
