@@ -8,6 +8,8 @@ import LoadingState from "@/components/LoadingState";
 import ErrorState from "@/components/ErrorState";
 import { ResearchResponse } from "@/types";
 
+import AIChatPanel from "@/components/AIChatPanel";
+
 export default function CompanyPage({ params, searchParams }: { params: { slug: string }, searchParams: { forceRefresh?: string } }) {
   const [data, setData] = useState<ResearchResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -61,6 +63,7 @@ export default function CompanyPage({ params, searchParams }: { params: { slug: 
       <div className="w-[40%] h-full">
         <CompanyDetailPanel company={data.company} />
       </div>
+      <AIChatPanel companyData={data.company} />
     </div>
   );
 }
