@@ -20,6 +20,7 @@ export default function EcosystemGraph({ initialNodes, initialEdges }: Ecosystem
 
   const [showSubsidiaries, setShowSubsidiaries] = useState(true);
   const [showAssociated, setShowAssociated] = useState(true);
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 
   const nodeTypes = useMemo(() => ({ custom: CustomNode }), []);
 
@@ -28,6 +29,10 @@ export default function EcosystemGraph({ initialNodes, initialEdges }: Ecosystem
       let hidden = false;
       if (node.data.nodeType === 'associated' && !showAssociated) hidden = true;
       if (node.data.nodeType === 'subsidiary' && !showSubsidiaries) hidden = true;
+      
+      // Filter by established_year
+      if (node.data.year && parseInt(node.data.year) > currentYear) hidden = true;
+      
       return { ...node, hidden };
     }));
     
@@ -36,9 +41,12 @@ export default function EcosystemGraph({ initialNodes, initialEdges }: Ecosystem
       let hidden = false;
       if (targetNode?.data.nodeType === 'associated' && !showAssociated) hidden = true;
       if (targetNode?.data.nodeType === 'subsidiary' && !showSubsidiaries) hidden = true;
+      
+      if (targetNode?.data.year && parseInt(targetNode.data.year) > currentYear) hidden = true;
+      
       return { ...edge, hidden };
     }));
-  }, [showAssociated, showSubsidiaries, initialNodes, initialEdges, setNodes, setEdges]);
+  }, [showAssociated, showSubsidiaries, currentYear, initialNodes, initialEdges, setNodes, setEdges]);
 
   const onDownload = useCallback(() => {
     const flowViewport = document.querySelector('.react-flow') as HTMLElement;
@@ -125,34 +133,49 @@ export default function EcosystemGraph({ initialNodes, initialEdges }: Ecosystem
         </Panel>
 
         {/* Filters and Export Panel */}
-        <Panel position="top-right" className="flex flex-col gap-3 mt-4 mr-4">
-          <div className="bg-slate-900/80 backdrop-blur-md p-4 rounded-xl border border-slate-700 shadow-2xl flex flex-col gap-3">
-            <h4 className="text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2">
-              <Filter size={14} className="text-blue-400" /> Bộ lọc
-            </h4>
-            <label className="flex items-center gap-3 text-sm text-gray-300 cursor-pointer hover:text-white transition-colors">
-              <input 
-                type="checkbox" 
-                checked={showSubsidiaries} 
-                onChange={(e) => setShowSubsidiaries(e.target.checked)} 
-                className="w-4 h-4 rounded bg-slate-800 border-slate-600 accent-blue-500" 
-              />
-              Hiện Công ty con
-            </label>
-            <label className="flex items-center gap-3 text-sm text-gray-300 cursor-pointer hover:text-white transition-colors">
-              <input 
-                type="checkbox" 
-                checked={showAssociated} 
-                onChange={(e) => setShowAssociated(e.target.checked)} 
-                className="w-4 h-4 rounded bg-slate-800 border-slate-600 accent-blue-500" 
-              />
-              Hiện Công ty liên kết
-            </label>
+        <Panel position="top-right" className="bg-slate-900/80 backdrop-blur-md p-4 rounded-xl border border-slate-700 shadow-2xl space-y-3">
+          <div className="flex items-center gap-2 mb-2 text-slate-300 font-medium border-b border-slate-700 pb-2">
+            <Filter size={16} /> BỘ LỌC
           </div>
           
+          <label className="flex items-center gap-3 text-sm text-slate-200 cursor-pointer hover:text-white transition-colors">
+            <input 
+              type="checkbox" 
+              checked={showSubsidiaries} 
+              onChange={(e) => setShowSubsidiaries(e.target.checked)}
+              className="w-4 h-4 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800"
+            />
+            Hiện Công ty con
+          </label>
+          
+          <label className="flex items-center gap-3 text-sm text-slate-200 cursor-pointer hover:text-white transition-colors">
+            <input 
+              type="checkbox" 
+              checked={showAssociated} 
+              onChange={(e) => setShowAssociated(e.target.checked)}
+              className="w-4 h-4 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800"
+            />
+            Hiện Công ty liên kết
+          </label>
+
+          <div className="pt-3 border-t border-slate-700 mt-2">
+            <div className="flex justify-between text-xs text-slate-300 mb-2 font-medium">
+              <span>Trục thời gian:</span>
+              <span className="text-blue-400 font-bold">{currentYear}</span>
+            </div>
+            <input 
+              type="range" 
+              min="1990" 
+              max={new Date().getFullYear()} 
+              value={currentYear} 
+              onChange={(e) => setCurrentYear(parseInt(e.target.value))}
+              className="w-full accent-blue-500 h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer"
+            />
+          </div>
+
           <button 
             onClick={onDownload}
-            className="bg-blue-600/90 hover:bg-blue-500 backdrop-blur-md text-white text-sm font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 border border-blue-400/50 hover:scale-105"
+            className="w-full mt-4 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors shadow-lg shadow-blue-500/20"
           >
             <Download size={16} /> Tải ảnh PNG
           </button>
