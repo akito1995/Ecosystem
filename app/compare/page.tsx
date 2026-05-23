@@ -81,7 +81,6 @@ export default function ComparePage() {
               <EcosystemGraph 
                 initialNodes={data1.nodes} 
                 initialEdges={data1.edges} 
-                companyData={data1.company} 
               />
             </div>
           ) : (
@@ -116,7 +115,6 @@ export default function ComparePage() {
               <EcosystemGraph 
                 initialNodes={data2.nodes} 
                 initialEdges={data2.edges} 
-                companyData={data2.company} 
               />
             </div>
           ) : (
