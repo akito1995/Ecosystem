@@ -27,6 +27,7 @@ export interface CompanyData {
     tour: string;
     car_rental: string;
     partnership_recommendation: string;
+    approach_strategy: string;
   };
   raw_json?: any;
   created_at?: string;

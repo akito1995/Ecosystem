@@ -113,6 +113,13 @@ export default function CompanyDetailPanel({ company }: { company: CompanyData }
             <div className="mt-3 p-4 bg-emerald-500/20 rounded-lg border border-emerald-500/30">
               <span className="text-emerald-300 font-black block text-xs uppercase tracking-wider mb-2">💡 Đề xuất Hợp tác</span>
               <p className="text-emerald-50 text-sm leading-relaxed font-medium">{company.travel_demand_assessment.partnership_recommendation}</p>
+              
+              {company.travel_demand_assessment.approach_strategy && (
+                <>
+                  <span className="text-emerald-300 font-black block text-xs uppercase tracking-wider mb-2 pt-3 mt-3 border-t border-emerald-500/30">🚀 Hướng tiếp cận & Giải pháp</span>
+                  <p className="text-emerald-50 text-sm leading-relaxed font-medium">{company.travel_demand_assessment.approach_strategy}</p>
+                </>
+              )}
             </div>
           </section>
         )}

@@ -28,7 +28,8 @@ Return ONLY this exact JSON structure:
     "visa": "High/Medium/Low with brief reason",
     "tour": "High/Medium/Low with brief reason",
     "car_rental": "High/Medium/Low with brief reason",
-    "partnership_recommendation": "Final verdict on whether a Travel Agency should partner with them"
+    "partnership_recommendation": "Final verdict on whether a Travel Agency should partner with them",
+    "approach_strategy": "Recommended approach direction and sales solution/strategy for this client"
   },
   "industry": "Primary industry sector",
   "parent_company": "Parent company or group name (null if independent)",
