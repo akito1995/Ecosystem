@@ -16,7 +16,20 @@ Return ONLY this exact JSON structure:
   "company_name": "Official company name",
   "business_registration_name": "Name as registered",
   "stock_ticker": "3-letter stock ticker if listed (e.g., VIC, FPT), otherwise null",
-  "established_year": "Year founded (e.g., 1993), or null if unknown",
+  "is_foreign": true or false,
+  "established_year": "Year founded (e.g., '1993'), or null",
+  "tax_code": "Tax code/Business ID if known, else null",
+  "employee_count": "Estimated employee count (e.g., '10,000+'), else null",
+  "legal_representative": "Name of legal rep or CEO, else null",
+  "legal_issues": "Brief summary of notable past legal issues/scandals, else null",
+  "travel_demand_assessment": {
+    "flights": "High/Medium/Low with brief reason",
+    "hotels": "High/Medium/Low with brief reason",
+    "visa": "High/Medium/Low with brief reason",
+    "tour": "High/Medium/Low with brief reason",
+    "car_rental": "High/Medium/Low with brief reason",
+    "partnership_recommendation": "Final verdict on whether a Travel Agency should partner with them"
+  },
   "industry": "Primary industry sector",
   "parent_company": "Parent company or group name (null if independent)",
   "subsidiaries": [

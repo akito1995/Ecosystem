@@ -13,6 +13,20 @@ export interface CompanyData {
   ownership_structure: string | null;
   notable_relationships: { company: string; type: string }[];
   sources: string[];
+  is_foreign?: boolean | null;
+  established_year?: string | null;
+  tax_code?: string | null;
+  employee_count?: string | null;
+  legal_representative?: string | null;
+  legal_issues?: string | null;
+  travel_demand_assessment?: {
+    flights: string;
+    hotels: string;
+    visa: string;
+    tour: string;
+    car_rental: string;
+    partnership_recommendation: string;
+  };
   raw_json?: any;
   created_at?: string;
   updated_at?: string;

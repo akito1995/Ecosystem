@@ -1,7 +1,7 @@
 "use client";
 
 import { CompanyData } from "../types";
-import { ExternalLink, RefreshCw } from "lucide-react";
+import { ExternalLink, RefreshCw, Briefcase, Plane } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -55,6 +55,67 @@ export default function CompanyDetailPanel({ company }: { company: CompanyData }
           <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-2">Tổng quan</h3>
           <p className="text-gray-300 text-sm leading-relaxed">{company.description || "N/A"}</p>
         </section>
+
+        {/* B2B Info */}
+        <section className="bg-[#1A2235] p-5 rounded-xl border border-[#2A3441] space-y-4 shadow-lg">
+          <h3 className="text-sm font-bold text-white flex items-center gap-2 border-b border-[#2A3441] pb-2">
+            <Briefcase size={16} className="text-blue-400" /> Hồ sơ Doanh nghiệp
+          </h3>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <span className="text-gray-500 block text-xs mb-1 uppercase tracking-wider">Loại hình</span>
+              <span className="text-white font-medium">{company.is_foreign === true ? 'Nước ngoài' : company.is_foreign === false ? 'Việt Nam' : 'Không rõ'}</span>
+            </div>
+            <div>
+              <span className="text-gray-500 block text-xs mb-1 uppercase tracking-wider">Năm thành lập</span>
+              <span className="text-white font-medium">{company.established_year || "N/A"}</span>
+            </div>
+            <div>
+              <span className="text-gray-500 block text-xs mb-1 uppercase tracking-wider">Mã số thuế</span>
+              <span className="text-white font-medium">{company.tax_code || "N/A"}</span>
+            </div>
+            <div>
+              <span className="text-gray-500 block text-xs mb-1 uppercase tracking-wider">Nhân sự</span>
+              <span className="text-white font-medium">{company.employee_count || "N/A"}</span>
+            </div>
+            <div className="col-span-2">
+              <span className="text-gray-500 block text-xs mb-1 uppercase tracking-wider">Người đại diện pháp luật</span>
+              <span className="text-white font-medium">{company.legal_representative || "N/A"}</span>
+            </div>
+          </div>
+          {company.legal_issues && company.legal_issues.toLowerCase() !== "none" && company.legal_issues.toLowerCase() !== "null" && (
+            <div className="mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+              <span className="text-red-400 font-bold text-[10px] uppercase tracking-wider block mb-1">Lịch sử Pháp lý / Rủi ro</span>
+              <p className="text-red-200 text-sm leading-relaxed">{company.legal_issues}</p>
+            </div>
+          )}
+        </section>
+
+        {/* Travel Demand Assessment */}
+        {company.travel_demand_assessment && (
+          <section className="bg-emerald-500/10 p-5 rounded-xl border border-emerald-500/20 space-y-4 shadow-lg shadow-emerald-500/5">
+            <h3 className="text-sm font-bold text-emerald-400 flex items-center gap-2 border-b border-emerald-500/20 pb-2">
+              <Plane size={16} /> Tiềm năng B2B Du lịch & Lữ hành
+            </h3>
+            <div className="space-y-3 text-sm text-gray-300">
+              <div className="bg-[#0B101E]/50 p-3 rounded-lg border border-emerald-500/10">
+                <span className="text-emerald-500 font-bold block text-xs uppercase mb-1">Vé máy bay & Khách sạn</span>
+                <p><strong>Vé máy bay:</strong> {company.travel_demand_assessment.flights}</p>
+                <p className="mt-1"><strong>Khách sạn:</strong> {company.travel_demand_assessment.hotels}</p>
+              </div>
+              <div className="bg-[#0B101E]/50 p-3 rounded-lg border border-emerald-500/10">
+                <span className="text-emerald-500 font-bold block text-xs uppercase mb-1">Dịch vụ Khác</span>
+                <p><strong>Visa/Passport:</strong> {company.travel_demand_assessment.visa}</p>
+                <p className="mt-1"><strong>Tour Đoàn (Teambuilding):</strong> {company.travel_demand_assessment.tour}</p>
+                <p className="mt-1"><strong>Thuê xe:</strong> {company.travel_demand_assessment.car_rental}</p>
+              </div>
+            </div>
+            <div className="mt-3 p-4 bg-emerald-500/20 rounded-lg border border-emerald-500/30">
+              <span className="text-emerald-300 font-black block text-xs uppercase tracking-wider mb-2">💡 Đề xuất Hợp tác</span>
+              <p className="text-emerald-50 text-sm leading-relaxed font-medium">{company.travel_demand_assessment.partnership_recommendation}</p>
+            </div>
+          </section>
+        )}
 
         {/* Ownership Structure */}
         <section>
