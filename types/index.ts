@@ -3,10 +3,11 @@ export interface CompanyData {
   search_key?: string;
   company_name: string;
   business_registration_name: string | null;
+  stock_ticker?: string | null;
   industry: string | null;
   parent_company: string | null;
-  subsidiaries: { name: string; role: string; ownership_percent: number | null }[];
-  associated_companies: { name: string; relationship: string }[];
+  subsidiaries: { name: string; role: string; ownership_percent: number | null; stock_ticker?: string | null; established_year?: string | null; }[];
+  associated_companies: { name: string; relationship: string; stock_ticker?: string | null; established_year?: string | null; }[];
   ecosystem_role: string | null;
   industry_value_chain_position: string | null;
   description: string | null;
