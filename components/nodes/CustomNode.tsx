@@ -44,7 +44,26 @@ export default function CustomNode({ data }: { data: any }) {
     fallbackColor = "F59E0B";
   }
 
-  const initials = data.label.substring(0, 2).toUpperCase();
+  const getMeaningfulInitials = (name: string) => {
+    let cleanName = name;
+    let previous = "";
+    const prefixes = /^(Công ty|Cty|Cổ phần|CP|TNHH|Tập đoàn|Tổng công ty|Đầu tư|Dịch vụ|Thương mại|Sản xuất|Xây dựng|Phát triển|và|Hàng tiêu dùng|MTV|TMDV|TM|DV)\s+/gi;
+    
+    while (cleanName !== previous) {
+      previous = cleanName;
+      cleanName = cleanName.replace(prefixes, '').trim();
+    }
+    
+    if (!cleanName) cleanName = name; // Fallback
+    
+    const words = cleanName.split(' ').filter(w => w.length > 0);
+    if (words.length >= 2) {
+      return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
+    }
+    return cleanName.substring(0, 2).toUpperCase();
+  };
+
+  const initials = getMeaningfulInitials(data.label || "A");
   const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=${fallbackColor}&color=fff&size=64&bold=true`;
   
   // Clean domain just in case (e.g. https://www.vingroup.net -> vingroup.net)
