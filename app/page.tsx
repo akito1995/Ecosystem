@@ -14,7 +14,8 @@ export default function Home() {
     e.preventDefault();
     if (!query.trim()) return;
     setLoading(true);
-    router.push(`/explorer?q=${encodeURIComponent(query)}`);
+    const slug = encodeURIComponent(query.trim().toLowerCase());
+    router.push(`/company/${slug}`);
   };
 
   return (

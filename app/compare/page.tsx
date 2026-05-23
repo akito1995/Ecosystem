@@ -21,7 +21,11 @@ export default function ComparePage() {
     if (!query1.trim()) return;
     setLoading1(true);
     try {
-      const res = await fetch(`/api/research?q=${encodeURIComponent(query1)}`);
+      const res = await fetch(`/api/research`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: query1 })
+      });
       const json = await res.json();
       if (!json.error) setData1(json);
     } catch (err) {}
@@ -33,7 +37,11 @@ export default function ComparePage() {
     if (!query2.trim()) return;
     setLoading2(true);
     try {
-      const res = await fetch(`/api/research?q=${encodeURIComponent(query2)}`);
+      const res = await fetch(`/api/research`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: query2 })
+      });
       const json = await res.json();
       if (!json.error) setData2(json);
     } catch (err) {}
