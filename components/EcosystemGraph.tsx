@@ -1,10 +1,12 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import { ReactFlow, Controls, Background, MiniMap, useNodesState, useEdgesState, BackgroundVariant, Panel } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import { useRouter } from "next/navigation";
 import CustomNode from "./nodes/CustomNode";
+import { toPng } from "html-to-image";
+import { Download, Filter } from "lucide-react";
 
 interface EcosystemGraphProps {
   initialNodes: any[];
@@ -16,7 +18,53 @@ export default function EcosystemGraph({ initialNodes, initialEdges }: Ecosystem
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const router = useRouter();
 
+  const [showSubsidiaries, setShowSubsidiaries] = useState(true);
+  const [showAssociated, setShowAssociated] = useState(true);
+
   const nodeTypes = useMemo(() => ({ custom: CustomNode }), []);
+
+  useEffect(() => {
+    setNodes(initialNodes.map(node => {
+      let hidden = false;
+      if (node.data.nodeType === 'associated' && !showAssociated) hidden = true;
+      if (node.data.nodeType === 'subsidiary' && !showSubsidiaries) hidden = true;
+      return { ...node, hidden };
+    }));
+    
+    setEdges(initialEdges.map(edge => {
+      const targetNode = initialNodes.find(n => n.id === edge.target);
+      let hidden = false;
+      if (targetNode?.data.nodeType === 'associated' && !showAssociated) hidden = true;
+      if (targetNode?.data.nodeType === 'subsidiary' && !showSubsidiaries) hidden = true;
+      return { ...edge, hidden };
+    }));
+  }, [showAssociated, showSubsidiaries, initialNodes, initialEdges, setNodes, setEdges]);
+
+  const onDownload = useCallback(() => {
+    const flowViewport = document.querySelector('.react-flow') as HTMLElement;
+    if (flowViewport) {
+      toPng(flowViewport, {
+        backgroundColor: '#0A0F1E',
+        filter: (node) => {
+          if (
+            node.classList?.contains('react-flow__minimap') || 
+            node.classList?.contains('react-flow__controls') ||
+            node.classList?.contains('react-flow__panel')
+          ) {
+            return false;
+          }
+          return true;
+        },
+      }).then((dataUrl) => {
+        const a = document.createElement('a');
+        a.setAttribute('download', 'ecosystem-graph.png');
+        a.setAttribute('href', dataUrl);
+        a.click();
+      }).catch(err => {
+        console.error('Lỗi khi xuất ảnh:', err);
+      });
+    }
+  }, []);
 
   const onNodeClick = useCallback((event: any, node: any) => {
     const label = node.data.label;
@@ -40,6 +88,8 @@ export default function EcosystemGraph({ initialNodes, initialEdges }: Ecosystem
         <Background variant={BackgroundVariant.Dots} gap={16} size={1} color="#334155" />
         <Controls />
         <MiniMap nodeStrokeColor="#fff" nodeColor="#1A2235" maskColor="rgba(10, 15, 30, 0.7)" />
+        
+        {/* Legend Panel */}
         <Panel position="bottom-left" className="bg-slate-900/80 backdrop-blur-md p-4 rounded-xl border border-slate-700 shadow-2xl mb-4 ml-4">
           <h4 className="text-white text-xs font-bold mb-3 uppercase tracking-wider">Chú thích biểu đồ</h4>
           <div className="space-y-3 text-xs">
@@ -60,6 +110,40 @@ export default function EcosystemGraph({ initialNodes, initialEdges }: Ecosystem
               <span className="text-gray-300 font-medium">Công ty liên kết</span>
             </div>
           </div>
+        </Panel>
+
+        {/* Filters and Export Panel */}
+        <Panel position="top-right" className="flex flex-col gap-3 mt-4 mr-4">
+          <div className="bg-slate-900/80 backdrop-blur-md p-4 rounded-xl border border-slate-700 shadow-2xl flex flex-col gap-3">
+            <h4 className="text-white text-xs font-bold uppercase tracking-wider flex items-center gap-2">
+              <Filter size={14} className="text-blue-400" /> Bộ lọc
+            </h4>
+            <label className="flex items-center gap-3 text-sm text-gray-300 cursor-pointer hover:text-white transition-colors">
+              <input 
+                type="checkbox" 
+                checked={showSubsidiaries} 
+                onChange={(e) => setShowSubsidiaries(e.target.checked)} 
+                className="w-4 h-4 rounded bg-slate-800 border-slate-600 accent-blue-500" 
+              />
+              Hiện Công ty con
+            </label>
+            <label className="flex items-center gap-3 text-sm text-gray-300 cursor-pointer hover:text-white transition-colors">
+              <input 
+                type="checkbox" 
+                checked={showAssociated} 
+                onChange={(e) => setShowAssociated(e.target.checked)} 
+                className="w-4 h-4 rounded bg-slate-800 border-slate-600 accent-blue-500" 
+              />
+              Hiện Công ty liên kết
+            </label>
+          </div>
+          
+          <button 
+            onClick={onDownload}
+            className="bg-blue-600/90 hover:bg-blue-500 backdrop-blur-md text-white text-sm font-bold py-3 px-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 border border-blue-400/50 hover:scale-105"
+          >
+            <Download size={16} /> Tải ảnh PNG
+          </button>
         </Panel>
       </ReactFlow>
     </div>
