@@ -2,12 +2,6 @@ import { CompanyData } from "../types";
 import dagre from "dagre";
 
 const baseNodeStyle = { width: 180, height: 100 };
-const nodeColors = {
-  center: { backgroundColor: "#EFF6FF", border: "1px solid #3B82F6" },
-  parent: { backgroundColor: "#F5F3FF", border: "1px solid #8B5CF6" },
-  subsidiary: { backgroundColor: "#ECFDF5", border: "1px solid #10B981" },
-  associated: { backgroundColor: "#FFFBEB", border: "1px solid #F59E0B" }
-};
 
 export function buildEcosystemGraph(companyData: CompanyData) {
   const nodes: any[] = [];
@@ -23,7 +17,7 @@ export function buildEcosystemGraph(companyData: CompanyData) {
       ticker: companyData.stock_ticker || null,
       year: companyData.established_year || null
     },
-    style: { ...baseNodeStyle, ...nodeColors.center },
+    style: baseNodeStyle,
   };
   nodes.push(rootNode);
 
@@ -39,7 +33,7 @@ export function buildEcosystemGraph(companyData: CompanyData) {
         ticker: null,
         year: null
       },
-      style: { ...baseNodeStyle, ...nodeColors.parent },
+      style: baseNodeStyle,
     });
     edges.push({
       id: `edge-parent-root`,
@@ -66,7 +60,7 @@ export function buildEcosystemGraph(companyData: CompanyData) {
           ticker: sub.stock_ticker || null,
           year: sub.established_year || null
         },
-        style: { ...baseNodeStyle, ...nodeColors.subsidiary },
+        style: baseNodeStyle,
       });
       edges.push({
         id: `edge-root-${subId}`,
@@ -93,7 +87,7 @@ export function buildEcosystemGraph(companyData: CompanyData) {
           ticker: assoc.stock_ticker || null,
           year: assoc.established_year || null
         },
-        style: { ...baseNodeStyle, ...nodeColors.associated },
+        style: baseNodeStyle,
       });
       edges.push({
         id: `edge-root-${assocId}`,

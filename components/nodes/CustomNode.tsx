@@ -16,9 +16,26 @@ export default function CustomNode({ data }: { data: any }) {
   }, [data.ticker]);
 
   let icon = <Building2 size={16} />;
-  if (data.nodeType === "center") icon = <Crown size={16} />;
-  if (data.nodeType === "parent") icon = <Landmark size={16} />;
-  if (data.nodeType === "associated") icon = <Link size={16} />;
+  let bgColor = "bg-white/10";
+  let borderColor = "border-white/20";
+
+  if (data.nodeType === "center") {
+    icon = <Crown size={16} />;
+    bgColor = "bg-blue-600/30";
+    borderColor = "border-blue-400/50";
+  } else if (data.nodeType === "parent") {
+    icon = <Landmark size={16} />;
+    bgColor = "bg-purple-600/30";
+    borderColor = "border-purple-400/50";
+  } else if (data.nodeType === "subsidiary") {
+    icon = <Landmark size={16} />;
+    bgColor = "bg-emerald-600/30";
+    borderColor = "border-emerald-400/50";
+  } else if (data.nodeType === "associated") {
+    icon = <Link size={16} />;
+    bgColor = "bg-amber-500/30";
+    borderColor = "border-amber-400/50";
+  }
 
   const renderSparkline = () => {
     if (prices.length < 2) return null;
@@ -42,7 +59,7 @@ export default function CustomNode({ data }: { data: any }) {
         <svg width={width} height={height} className="overflow-visible">
           <polyline fill="none" stroke={color} strokeWidth="1.5" points={points} strokeLinecap="round" strokeLinejoin="round" />
         </svg>
-        <span className={`text-[9px] mt-1 font-bold ${isUp ? 'text-emerald-500' : 'text-red-500'}`}>
+        <span className={`text-[9px] mt-1 font-bold ${isUp ? 'text-emerald-400' : 'text-red-400'}`}>
           {data.ticker} {isUp ? '▲' : '▼'}
         </span>
       </div>
@@ -50,7 +67,7 @@ export default function CustomNode({ data }: { data: any }) {
   };
 
   return (
-    <div className={`px-4 py-3 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-xl backdrop-blur-md bg-white/10 border border-white/20 flex flex-col items-center justify-center text-center w-full h-full relative hover:scale-105 hover:bg-white/20 transition-all duration-300`}>
+    <div className={`px-4 py-3 shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-xl backdrop-blur-md ${bgColor} border ${borderColor} flex flex-col items-center justify-center text-center w-full h-full relative hover:scale-105 hover:bg-white/20 transition-all duration-300`}>
       <Handle type="target" position={Position.Top} className="w-2 h-2 !bg-slate-400 border-none" />
       
       <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white mb-2 shadow-inner">
