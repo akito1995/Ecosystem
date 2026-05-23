@@ -40,7 +40,7 @@ export async function fetchGeminiResearch(query: string) {
   const userPrompt = USER_PROMPT_TEMPLATE.replace("{query}", query);
 
   const response = await axios.post(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent?key=${GEMINI_API_KEY}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
     {
       systemInstruction: {
         parts: [{ text: SYSTEM_PROMPT }]
