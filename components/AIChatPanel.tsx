@@ -42,8 +42,9 @@ export default function AIChatPanel({ companyData }: { companyData: CompanyData 
       });
 
       setMessages(prev => [...prev, { role: 'ai', text: response.data.reply }]);
-    } catch (error) {
-      setMessages(prev => [...prev, { role: 'ai', text: "Xin lỗi, đã có lỗi xảy ra khi kết nối tới AI Chat. Vui lòng thử lại." }]);
+    } catch (error: any) {
+      const errorMsg = error.response?.data?.error || error.message || "Lỗi không xác định";
+      setMessages(prev => [...prev, { role: 'ai', text: `Xin lỗi, đã có lỗi kết nối tới AI: ${errorMsg}` }]);
     } finally {
       setLoading(false);
     }

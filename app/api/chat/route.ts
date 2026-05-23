@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import axios from "axios";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
@@ -18,32 +17,31 @@ ${JSON.stringify(companyContext, null, 2)}
 Answer the user's questions about this company, its ecosystem, risks, opportunities, or anything else.
 Keep your answers concise, insightful, and strictly in Vietnamese (Tiếng Việt). Use markdown formatting for readability.`;
 
-    const response = await axios.post(
+    const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
       {
-        systemInstruction: {
-          parts: [{ text: systemPrompt }]
-        },
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: message }]
-          }
-        ],
-        generationConfig: {
-          temperature: 0.3
-        }
-      },
-      {
-        headers: { "Content-Type": "application/json" }
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemPrompt }] },
+          contents: [{ role: "user", parts: [{ text: message }] }],
+          generationConfig: { temperature: 0.3 }
+        })
       }
     );
 
-    const reply = response.data?.candidates?.[0]?.content?.parts?.[0]?.text || "Xin lỗi, tôi không thể trả lời lúc này.";
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("Gemini API Error:", data);
+      return NextResponse.json({ error: data.error?.message || "Lỗi từ Google API" }, { status: response.status });
+    }
+
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "Xin lỗi, tôi không thể trả lời lúc này.";
     
     return NextResponse.json({ reply });
   } catch (error: any) {
-    console.error("Chat API error:", error.response?.data || error.message);
-    return NextResponse.json({ error: "Lỗi kết nối đến AI Chat" }, { status: 500 });
+    console.error("Chat API error:", error);
+    return NextResponse.json({ error: "Lỗi Server: " + error.message }, { status: 500 });
   }
 }

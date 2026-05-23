@@ -5,7 +5,7 @@ import { ReactFlow, Controls, Background, MiniMap, useNodesState, useEdgesState,
 import "@xyflow/react/dist/style.css";
 import { useRouter } from "next/navigation";
 import CustomNode from "./nodes/CustomNode";
-import { toPng } from "html-to-image";
+import html2canvas from "html2canvas";
 import { Download, Filter } from "lucide-react";
 
 interface EcosystemGraphProps {
@@ -43,24 +43,36 @@ export default function EcosystemGraph({ initialNodes, initialEdges }: Ecosystem
   const onDownload = useCallback(() => {
     const flowViewport = document.querySelector('.react-flow') as HTMLElement;
     if (flowViewport) {
-      toPng(flowViewport, {
+      // Hide UI elements temporarily
+      const minimap = document.querySelector('.react-flow__minimap') as HTMLElement;
+      const controls = document.querySelector('.react-flow__controls') as HTMLElement;
+      const panels = document.querySelectorAll('.react-flow__panel');
+      
+      if (minimap) minimap.style.display = 'none';
+      if (controls) controls.style.display = 'none';
+      panels.forEach((p: any) => p.style.display = 'none');
+
+      html2canvas(flowViewport, {
         backgroundColor: '#0A0F1E',
-        filter: (node) => {
-          if (
-            node.classList?.contains('react-flow__minimap') || 
-            node.classList?.contains('react-flow__controls') ||
-            node.classList?.contains('react-flow__panel')
-          ) {
-            return false;
-          }
-          return true;
-        },
-      }).then((dataUrl) => {
+        scale: 2,
+        logging: false,
+        useCORS: true,
+      }).then((canvas) => {
+        // Restore UI elements
+        if (minimap) minimap.style.display = 'block';
+        if (controls) controls.style.display = 'flex';
+        panels.forEach((p: any) => p.style.display = 'flex');
+
+        const dataUrl = canvas.toDataURL('image/png');
         const a = document.createElement('a');
         a.setAttribute('download', 'ecosystem-graph.png');
         a.setAttribute('href', dataUrl);
         a.click();
       }).catch(err => {
+        // Restore UI elements even on error
+        if (minimap) minimap.style.display = 'block';
+        if (controls) controls.style.display = 'flex';
+        panels.forEach((p: any) => p.style.display = 'flex');
         console.error('Lỗi khi xuất ảnh:', err);
       });
     }
