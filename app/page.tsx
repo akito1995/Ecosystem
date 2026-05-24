@@ -53,13 +53,29 @@ export default function Home() {
           </button>
         </form>
 
-        <div className="mt-8 flex items-center justify-center gap-4">
-          <Link href="/compare" className="flex items-center gap-2 px-6 py-3 border border-purple-500/30 text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(168,85,247,0.15)] hover:shadow-[0_0_20px_rgba(168,85,247,0.3)]">
-            <ArrowRightLeft size={18} />
-            Chế độ Đại chiến (Compare)
-          </Link>
-          <div className="text-gray-500 text-sm flex items-center gap-2">
-            hoặc ấn <kbd className="px-2 py-1 bg-slate-800 rounded text-slate-300 text-xs border border-slate-700">Ctrl + K</kbd>
+        <div className="mt-8 flex flex-col items-center justify-center gap-4">
+          <div className="flex items-center gap-4">
+            <Link href="/compare" className="flex items-center gap-2 px-6 py-3 border border-purple-500/30 text-purple-400 bg-purple-500/10 hover:bg-purple-500/20 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(168,85,247,0.15)] hover:shadow-[0_0_20px_rgba(168,85,247,0.3)]">
+              <ArrowRightLeft size={18} />
+              Chế độ Đại chiến (Compare)
+            </Link>
+            <div className="text-gray-500 text-sm flex items-center gap-2">
+              hoặc ấn <kbd className="px-2 py-1 bg-slate-800 rounded text-slate-300 text-xs border border-slate-700">Ctrl + K</kbd>
+            </div>
+          </div>
+          
+          <div className="mt-4 flex items-center justify-center gap-2 bg-[#1A2235]/50 border border-[#2A3441] rounded-xl px-4 py-2 w-full max-w-sm">
+            <span className="text-xs text-gray-400">Gemini Key (Tùy chọn):</span>
+            <input 
+              type="password"
+              placeholder="Nhập API Key nếu có..."
+              onChange={(e) => {
+                localStorage.setItem("gemini_api_key", e.target.value);
+              }}
+              defaultValue={typeof window !== 'undefined' ? localStorage.getItem("gemini_api_key") || "" : ""}
+              className="bg-transparent border-none outline-none text-xs text-gray-300 flex-1 focus:ring-0"
+              title="Nhập API Key của riêng bạn nếu hệ thống báo lỗi hết lượt (Quota exceeded)"
+            />
           </div>
         </div>
       </div>

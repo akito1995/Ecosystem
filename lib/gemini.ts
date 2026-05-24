@@ -50,15 +50,16 @@ Return ONLY this exact JSON structure:
   "sources": ["URL or source name"]
 }`;
 
-export async function fetchGeminiResearch(query: string) {
-  if (!GEMINI_API_KEY) {
+export async function fetchGeminiResearch(query: string, customApiKey?: string) {
+  const apiKey = customApiKey || GEMINI_API_KEY;
+  if (!apiKey) {
     throw new Error("GEMINI_API_KEY is missing");
   }
 
   const userPrompt = USER_PROMPT_TEMPLATE.replace("{query}", query);
 
   const response = await axios.post(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`,
     {
       systemInstruction: {
         parts: [{ text: SYSTEM_PROMPT }]

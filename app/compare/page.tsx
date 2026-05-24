@@ -38,7 +38,7 @@ export default function ComparePage() {
     } else {
       setCompareResult(null);
     }
-  }, [data1, data2]);
+  }, [data1, data2, customApiKey]);
 
   const handleSearch1 = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,7 +49,7 @@ export default function ComparePage() {
       const res = await fetch(`/api/research`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: query1 })
+        body: JSON.stringify({ query: query1, customApiKey })
       });
       const json = await res.json();
       if (!json.error) {
@@ -72,7 +72,7 @@ export default function ComparePage() {
       const res = await fetch(`/api/research`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: query2 })
+        body: JSON.stringify({ query: query2, customApiKey })
       });
       const json = await res.json();
       if (!json.error) {
@@ -91,13 +91,25 @@ export default function ComparePage() {
       {/* Header */}
       <div className="h-16 border-b border-slate-800 flex items-center justify-between px-6 bg-[#0B101E] z-10 shrink-0">
         <div className="flex items-center gap-4">
-          <Link href="/" className="p-2 bg-slate-800 hover:bg-slate-700 rounded-full transition-colors text-slate-300">
-            <ArrowLeft size={18} />
+          <Link href="/" className="p-2 bg-slate-800 hover:bg-slate-700 rounded-full transition-colors text-slate-300 group">
+            <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
           </Link>
           <h1 className="text-xl font-black bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent flex items-center gap-3">
             <ArrowRightLeft size={24} className="text-purple-400" />
             CHẾ ĐỘ ĐẠI CHIẾN (COMPARE)
           </h1>
+        </div>
+        
+        <div className="flex items-center gap-2 bg-slate-900/80 border border-slate-700 rounded-lg px-3 py-1">
+          <span className="text-xs text-slate-400">Gemini Key:</span>
+          <input 
+            type="password"
+            value={customApiKey}
+            onChange={handleKeyChange}
+            placeholder="AIzaSy..."
+            className="bg-transparent border-none outline-none text-xs text-slate-300 w-24 focus:w-48 transition-all"
+            title="Nhập API Key của riêng bạn nếu hệ thống hết lượt"
+          />
         </div>
       </div>
 
@@ -182,7 +194,6 @@ export default function ComparePage() {
               <ArrowRightLeft size={48} className="text-slate-700 mb-4" />
               <p>Nhập tên đối thủ để so sánh</p>
             </div>
-          )}
         </div>
 
         {/* Center Analysis Panel */}

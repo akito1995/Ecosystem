@@ -20,15 +20,23 @@ export default function CompanyPage({ params, searchParams }: { params: { slug: 
 
   const fetchResearch = async () => {
     setLoading(true);
-    setError(null);
     try {
-      const response = await axios.post("/api/research", {
-        query: decodedSlug,
-        forceRefresh
+      const customApiKey = localStorage.getItem("gemini_api_key") || undefined;
+      const res = await fetch(`/api/research`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: decodedSlug, forceRefresh, customApiKey })
       });
-      setData(response.data);
+      const json = await res.json();
+      
+      if (json.error) {
+        setError(json.error);
+      } else {
+        setData(json);
+      }
     } catch (err: any) {
-      setError(err.response?.data?.error || err.message || "Failed to load research data");
+      console.error(err);
+      setError("Lỗi kết nối đến máy chủ");
     } finally {
       setLoading(false);
     }

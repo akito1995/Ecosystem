@@ -5,7 +5,7 @@ import { buildEcosystemGraph } from "@/lib/graphBuilder";
 
 export async function POST(req: Request) {
   try {
-    const { query, forceRefresh } = await req.json();
+    const { query, forceRefresh, customApiKey } = await req.json();
 
     if (!query || query.length < 2) {
       return NextResponse.json({ error: "Query quá ngắn" }, { status: 400 });
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
     // 2. Call Gemini API
     let companyData;
     try {
-      companyData = await fetchGeminiResearch(query);
+      companyData = await fetchGeminiResearch(query, customApiKey);
     } catch (e: any) {
       if (e.response?.status === 429 || e.message?.includes("exceeded")) {
         // Do not retry on rate limit
@@ -56,7 +56,7 @@ export async function POST(req: Request) {
       // Retry once if failed
       console.log("Gemini failed, retrying once...", e.message);
       try {
-        companyData = await fetchGeminiResearch(query + " please return ONLY valid JSON");
+        companyData = await fetchGeminiResearch(query + " please return ONLY valid JSON", customApiKey);
       } catch (retryErr: any) {
         // Return the actual error message to the frontend for easy debugging
         return NextResponse.json({ 
