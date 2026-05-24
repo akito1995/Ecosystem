@@ -74,6 +74,7 @@ export async function fetchGeminiResearch(query: string) {
         responseMimeType: "application/json"
       }
     },
+    {
       headers: {
         "Content-Type": "application/json"
       },
