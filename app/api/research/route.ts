@@ -13,14 +13,46 @@ export async function POST(req: Request) {
 
     const searchKey = query.toLowerCase().trim();
 
-    // 1. Bypass Cache completely as requested by user
-    // if (!forceRefresh) { ... }
+    // 1. Check Cache in Supabase
+    if (!forceRefresh) {
+      const { data: cachedCompany, error: cacheError } = await supabase
+        .from("companies")
+        .select("*")
+        .eq("search_key", searchKey)
+        .single();
+
+      if (cachedCompany) {
+        // If we have cached data, let's use it to save API calls!
+        // We'll ignore CACHE_TTL_DAYS for now to maximize cache hits and prevent Rate Limits
+        const { data: cachedGraph } = await supabase
+          .from("ecosystems")
+          .select("*")
+          .eq("root_company_id", cachedCompany.id)
+          .single();
+
+        if (cachedGraph) {
+          return NextResponse.json({
+            company: cachedCompany,
+            nodes: cachedGraph.nodes,
+            edges: cachedGraph.edges,
+            cached: true
+          });
+        }
+      }
+    }
 
     // 2. Call Gemini API
     let companyData;
     try {
       companyData = await fetchGeminiResearch(query);
     } catch (e: any) {
+      if (e.response?.status === 429 || e.message?.includes("exceeded")) {
+        // Do not retry on rate limit
+        return NextResponse.json({ 
+          error: `Lỗi từ Gemini API: ${e.response?.data?.error?.message || e.message}` 
+        }, { status: 429 });
+      }
+      
       // Retry once if failed
       console.log("Gemini failed, retrying once...", e.message);
       try {
