@@ -39,7 +39,7 @@ export default function ComparePage() {
       fetch('/api/compare', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ company1: data1.company, company2: data2.company })
+        body: JSON.stringify({ company1: data1.company, company2: data2.company, customApiKey })
       })
       .then(res => res.json())
       .then(json => {
