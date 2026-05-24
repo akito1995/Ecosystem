@@ -22,6 +22,17 @@ export default function ComparePage() {
   const [compareResult, setCompareResult] = useState<any>(null);
   const [comparing, setComparing] = useState(false);
 
+  // Custom API Key support
+  const [customApiKey, setCustomApiKey] = useState("");
+  useEffect(() => {
+    const savedKey = localStorage.getItem("gemini_api_key");
+    if (savedKey) setCustomApiKey(savedKey);
+  }, []);
+  const handleKeyChange = (e: any) => {
+    setCustomApiKey(e.target.value);
+    localStorage.setItem("gemini_api_key", e.target.value);
+  };
+
   useEffect(() => {
     if (data1 && data2) {
       setComparing(true);
@@ -194,6 +205,7 @@ export default function ComparePage() {
               <ArrowRightLeft size={48} className="text-slate-700 mb-4" />
               <p>Nhập tên đối thủ để so sánh</p>
             </div>
+          )}
         </div>
 
         {/* Center Analysis Panel */}
