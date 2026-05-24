@@ -16,6 +16,9 @@ export default function ComparePage() {
   const [loading1, setLoading1] = useState(false);
   const [loading2, setLoading2] = useState(false);
 
+  const [error1, setError1] = useState<string | null>(null);
+  const [error2, setError2] = useState<string | null>(null);
+
   const [compareResult, setCompareResult] = useState<any>(null);
   const [comparing, setComparing] = useState(false);
 
@@ -41,6 +44,7 @@ export default function ComparePage() {
     e.preventDefault();
     if (!query1.trim()) return;
     setLoading1(true);
+    setError1(null);
     try {
       const res = await fetch(`/api/research`, {
         method: "POST",
@@ -48,8 +52,14 @@ export default function ComparePage() {
         body: JSON.stringify({ query: query1 })
       });
       const json = await res.json();
-      if (!json.error) setData1(json);
-    } catch (err) {}
+      if (!json.error) {
+        setData1(json);
+      } else {
+        setError1(json.error);
+      }
+    } catch (err: any) {
+      setError1(err.message);
+    }
     setLoading1(false);
   };
 
@@ -57,6 +67,7 @@ export default function ComparePage() {
     e.preventDefault();
     if (!query2.trim()) return;
     setLoading2(true);
+    setError2(null);
     try {
       const res = await fetch(`/api/research`, {
         method: "POST",
@@ -64,8 +75,14 @@ export default function ComparePage() {
         body: JSON.stringify({ query: query2 })
       });
       const json = await res.json();
-      if (!json.error) setData2(json);
-    } catch (err) {}
+      if (!json.error) {
+        setData2(json);
+      } else {
+        setError2(json.error);
+      }
+    } catch (err: any) {
+      setError2(err.message);
+    }
     setLoading2(false);
   };
 
@@ -96,7 +113,9 @@ export default function ComparePage() {
                 placeholder="Nhập tên tập đoàn 1 (VD: Vingroup)..."
                 className="w-full bg-slate-900/90 backdrop-blur-md border border-blue-500/30 text-white rounded-xl px-4 py-3 pl-11 shadow-[0_0_20px_rgba(59,130,246,0.15)] focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all"
               />
-              <Search className="absolute left-4 top-3.5 text-blue-400" size={18} />
+              <button type="submit" className="absolute left-4 top-3.5 text-blue-400 hover:text-blue-300">
+                <Search size={18} />
+              </button>
             </form>
           </div>
           
@@ -104,6 +123,11 @@ export default function ComparePage() {
             <div className="flex-1 flex flex-col items-center justify-center text-slate-400">
               <Loader2 className="animate-spin mb-4 text-blue-500" size={40} />
               <p className="animate-pulse font-medium text-blue-400">Đang càn quét dữ liệu Hệ sinh thái 1...</p>
+            </div>
+          ) : error1 ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-red-400 px-8 text-center">
+              <AlertTriangle size={48} className="mb-4" />
+              <p>{error1}</p>
             </div>
           ) : data1 ? (
             <div className="flex-1 relative">
@@ -130,7 +154,9 @@ export default function ComparePage() {
                 placeholder="Nhập tên tập đoàn 2 (VD: Masan)..."
                 className="w-full bg-slate-900/90 backdrop-blur-md border border-purple-500/30 text-white rounded-xl px-4 py-3 pl-11 shadow-[0_0_20px_rgba(168,85,247,0.15)] focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
               />
-              <Search className="absolute left-4 top-3.5 text-purple-400" size={18} />
+              <button type="submit" className="absolute left-4 top-3.5 text-purple-400 hover:text-purple-300">
+                <Search size={18} />
+              </button>
             </form>
           </div>
           
@@ -138,6 +164,11 @@ export default function ComparePage() {
             <div className="flex-1 flex flex-col items-center justify-center text-slate-400">
               <Loader2 className="animate-spin mb-4 text-purple-500" size={40} />
               <p className="animate-pulse font-medium text-purple-400">Đang càn quét dữ liệu Hệ sinh thái 2...</p>
+            </div>
+          ) : error2 ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-red-400 px-8 text-center">
+              <AlertTriangle size={48} className="mb-4" />
+              <p>{error2}</p>
             </div>
           ) : data2 ? (
             <div className="flex-1 relative">
