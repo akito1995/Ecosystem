@@ -13,35 +13,8 @@ export async function POST(req: Request) {
 
     const searchKey = query.toLowerCase().trim();
 
-    // 1. Check Cache in Supabase
-    if (!forceRefresh) {
-      const { data: cachedCompany, error: cacheError } = await supabase
-        .from("companies")
-        .select("*")
-        .eq("search_key", searchKey)
-        .single();
-
-      if (cachedCompany) {
-        const cacheAgeDays = (new Date().getTime() - new Date(cachedCompany.updated_at).getTime()) / (1000 * 3600 * 24);
-        if (cacheAgeDays < (Number(process.env.CACHE_TTL_DAYS) || 7)) {
-          // Get Graph
-          const { data: cachedGraph } = await supabase
-            .from("ecosystems")
-            .select("*")
-            .eq("root_company_id", cachedCompany.id)
-            .single();
-
-          if (cachedGraph) {
-            return NextResponse.json({
-              company: cachedCompany,
-              nodes: cachedGraph.nodes,
-              edges: cachedGraph.edges,
-              cached: true
-            });
-          }
-        }
-      }
-    }
+    // 1. Bypass Cache completely as requested by user
+    // if (!forceRefresh) { ... }
 
     // 2. Call Gemini API
     let companyData;

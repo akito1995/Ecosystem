@@ -47,11 +47,11 @@ export default function CustomNode({ data }: { data: any }) {
   const getMeaningfulInitials = (name: string) => {
     let cleanName = name;
     let previous = "";
-    const prefixes = /^(Công ty|Cty|Cổ phần|CP|TNHH|Tập đoàn|Tổng công ty|Đầu tư|Dịch vụ|Thương mại|Sản xuất|Xây dựng|Phát triển|và|Hàng tiêu dùng|MTV|TMDV|TM|DV)\s+/gi;
     
     while (cleanName !== previous) {
       previous = cleanName;
-      cleanName = cleanName.replace(prefixes, '').trim();
+      // remove 'g' flag to prevent stateful lastIndex bugs
+      cleanName = cleanName.replace(/^(Công ty|Cty|Cổ phần|CP|TNHH|Tập đoàn|Tổng công ty|Đầu tư|Dịch vụ|Thương mại|Sản xuất|Xây dựng|Phát triển|và|Hàng tiêu dùng|MTV|TMDV|TM|DV)\s+/i, '').trim();
     }
     
     if (!cleanName) cleanName = name; // Fallback
